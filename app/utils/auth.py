@@ -1,6 +1,6 @@
-from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBasicCredentials, HTTPBasic
-from starlette import status
+import uuid
+
+from fastapi.security import HTTPBasic
 import jwt
 
 from app.servises.users import UserService
@@ -10,18 +10,6 @@ security = HTTPBasic()
 
 SECRET_KEY = "secret"
 ALGORITHM = "HS256"
-
-
-def authenticate_user(credentials: HTTPBasicCredentials = Depends(security)):
-    user_service = UserService()
-    user = user_service.get_user_by_username(credentials.username)
-    if not user or user.password != credentials.password:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials",
-        )
-
-    return user
 
 
 def create_jwt_token(data: dict):
@@ -47,4 +35,15 @@ def authenticate_user_jwt(token: str):
     if not user:
         return False
 
-    return True
+    return user
+
+
+def set_session_token_cookie(response):
+    session_token = uuid.uuid4()
+    response.set_cookie(
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        max_age=120,
+    )
+    return session_token

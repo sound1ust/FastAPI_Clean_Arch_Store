@@ -7,6 +7,7 @@ class UserIn(BaseModel):
     user_id: PositiveInt
     username: str
     password: str
+    role: int
     session_token: Union[UUID, None] = None
 
 
