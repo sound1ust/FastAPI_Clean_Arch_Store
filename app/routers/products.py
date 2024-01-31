@@ -3,9 +3,8 @@ from typing import Union
 from fastapi import APIRouter, HTTPException
 from pydantic import PositiveInt, ValidationError
 
-from app.databases.products import PRODUCTS_DB
-from app.databases.users import USERS_DB
 from app.models.products import ProductSearch
+from app.servises.products import ProductService
 
 router = APIRouter(
     prefix="/products",
@@ -19,46 +18,35 @@ def list_products(
         category: Union[str, None] = None,
         limit: PositiveInt = 10
 ):
+    data = {
+        "keyword": keyword,
+        "category": category,
+        "limit": limit,
+    }
     try:
-        ProductSearch(
-            keyword=keyword,
-            category=category,
-            limit=limit,
-        )
+        ProductSearch(**data)
 
     except ValidationError as exc:
         detail = exc.errors()[0]
         raise HTTPException(status_code=422, detail=detail.get("msg"))
 
-    result = []
-    index = 0
-    while len(result) < limit and index < len(PRODUCTS_DB):
-        product = PRODUCTS_DB[index]
+    product_service = ProductService()
 
-        if category:
-            if product.get("category") != category:
-                index += 1
-                continue
+    products = product_service.get_products_list(data)
 
-        if keyword.lower() in product.get("name").lower():
-            result.append(product)
-
-        index += 1
-
-    if not result:
+    if not products:
         raise HTTPException(
             status_code=404,
             detail="There are no products with these parameters",
         )
 
-    return result
+    return products
 
 
 @router.get("/{product_id}")
 def get_product(product_id: PositiveInt):
-    product = [
-        item for item in PRODUCTS_DB if item.get("product_id") == product_id
-    ]
+    product_service = ProductService()
+    product = product_service.get_product_by_id(product_id)
 
     if not product:
         raise HTTPException(
@@ -66,4 +54,4 @@ def get_product(product_id: PositiveInt):
             detail=f"There are no products with id '{product_id}'",
         )
 
-    return product[0]
+    return product

@@ -1,28 +1,28 @@
-from app.models.users import UserIn
+from app.models.users import UserRole
 
 USERS_DB = [
-    UserIn(**{
+    {
         "user_id": 1,
         "username": "admin",
         "password": "1234",
-        "role": 2,
-    }),
-    UserIn(**{
+        "role": UserRole.ADMIN,
+    },
+    {
         "user_id": 2,
         "username": "string",
         "password": "string",
-        "role": 1,
-    }),
-    UserIn(**{
+        "role": UserRole.USER,
+    },
+    {
         "user_id": 3,
         "username": "qwert",
         "password": "1111",
-        "role": 1,
-    }),
-    UserIn(**{
+        "role": UserRole.USER,
+    },
+    {
         "user_id": 4,
         "username": "pavel",
         "password": "0000",
-        "role": 1,
-    }),
+        "role": UserRole.USER,
+    },
 ]

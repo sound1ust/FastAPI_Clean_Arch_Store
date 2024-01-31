@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, HTTPException, Cookie
 from pydantic import PositiveInt
 
-from app.models.users import UserOut
+from app.models.users import UserOut, UserRole
 from app.servises.users import UserService
 
 router = APIRouter(
@@ -23,7 +23,7 @@ def get_user_by_session_token(session_token: uuid.UUID = Cookie()):
             detail="Unauthorized",
         )
 
-    if user.role < 1:
+    if user.role.value < UserRole.USER.value:
         raise HTTPException(
             status_code=403,
             detail="Forbidden",
@@ -43,7 +43,7 @@ def get_user_by_id(user_id: PositiveInt, session_token: uuid.UUID = Cookie()):
             detail="Unauthorized",
         )
 
-    if user.role < 2:
+    if user.role.value < UserRole.ADMIN.value:
         raise HTTPException(
             status_code=403,
             detail="Forbidden",

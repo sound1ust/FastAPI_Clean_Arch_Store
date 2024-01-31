@@ -59,6 +59,7 @@ def jwt_logout(session_token: uuid.UUID = Cookie()):
 
 @router.get("/authorize")
 def jwt_authorize(token: str, response: Response):
+    user_service = UserService()
     user = authenticate_user_jwt(token)
 
     if not user:
@@ -69,5 +70,6 @@ def jwt_authorize(token: str, response: Response):
 
     session_token = set_session_token_cookie(response)
     user.session_token = session_token
+    user_service.save_user(user)
 
     return {"detail": "You are authorized."}
