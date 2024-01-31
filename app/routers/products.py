@@ -3,7 +3,7 @@ from typing import Union
 from fastapi import APIRouter, HTTPException
 from pydantic import PositiveInt, ValidationError
 
-from app.models.products import ProductSearch
+from app.models.products import ProductSearch, Product, ProductCreate
 from app.servises.products import ProductService
 
 router = APIRouter(
@@ -55,3 +55,27 @@ def get_product(product_id: PositiveInt):
         )
 
     return product
+
+
+@router.post("", response_model=Product)
+def create_product(data: ProductCreate):
+    product_service = ProductService()
+
+    try:
+        product = product_service.create_product(data)
+
+    except ValidationError as exc:
+        detail = exc.errors()[0]
+        raise HTTPException(status_code=422, detail=detail.get("msg"))
+
+    return product
+
+
+@router.delete("/{product_id}")
+def delete_product(product_id: PositiveInt):
+    product_service = ProductService()
+    if product_service.delete_product(product_id):
+        return {"detail": "Product deleted"}
+
+    return HTTPException(status_code=404, detail="Product not found")
+
