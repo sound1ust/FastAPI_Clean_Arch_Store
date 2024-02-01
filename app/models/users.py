@@ -6,7 +6,8 @@ from pydantic import BaseModel, PositiveInt
 
 class UserRole(Enum):
     USER = 1
-    ADMIN = 2
+    MODERATOR = 2
+    ADMIN = 3
 
 
 class UserIn(BaseModel):

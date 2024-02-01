@@ -26,3 +26,7 @@ class UserRepository(ABC):
     @abstractmethod
     def get_user_by_session_token(self, session_token: UUID):
         ...
+
+    @abstractmethod
+    def delete_user(self, user_id: PositiveInt):
+        ...

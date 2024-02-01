@@ -1,9 +1,12 @@
+import uuid
 from typing import Union
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Cookie, Depends
 from pydantic import PositiveInt, ValidationError
 
+from app.dependencies.auth import UserAndRoleChecker
 from app.models.products import ProductSearch, Product, ProductCreate
+from app.models.users import UserRole
 from app.servises.products import ProductService
 
 router = APIRouter(
@@ -31,7 +34,6 @@ def list_products(
         raise HTTPException(status_code=422, detail=detail.get("msg"))
 
     product_service = ProductService()
-
     products = product_service.get_products_list(data)
 
     if not products:
@@ -57,7 +59,11 @@ def get_product(product_id: PositiveInt):
     return product
 
 
-@router.post("", response_model=Product)
+@router.post(
+    "",
+    response_model=Product,
+    dependencies=[Depends(UserAndRoleChecker(UserRole.MODERATOR)),],
+)
 def create_product(data: ProductCreate):
     product_service = ProductService()
 
@@ -71,11 +77,13 @@ def create_product(data: ProductCreate):
     return product
 
 
-@router.delete("/{product_id}")
+@router.delete(
+    "/{product_id}",
+    dependencies=[Depends(UserAndRoleChecker(UserRole.MODERATOR)),],
+)
 def delete_product(product_id: PositiveInt):
     product_service = ProductService()
-    if product_service.delete_product(product_id):
-        return {"detail": "Product deleted"}
+    if not product_service.delete_product(product_id):
+        raise HTTPException(status_code=404, detail="Product not found")
 
-    return HTTPException(status_code=404, detail="Product not found")
-
+    return {"detail": "Product deleted"}

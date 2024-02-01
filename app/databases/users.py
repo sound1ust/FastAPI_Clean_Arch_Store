@@ -9,20 +9,14 @@ USERS_DB = [
     },
     {
         "user_id": 2,
-        "username": "string",
-        "password": "string",
+        "username": "moder",
+        "password": "1234",
         "role": UserRole.USER,
     },
     {
         "user_id": 3,
-        "username": "qwert",
-        "password": "1111",
-        "role": UserRole.USER,
-    },
-    {
-        "user_id": 4,
-        "username": "pavel",
-        "password": "0000",
+        "username": "user",
+        "password": "1234",
         "role": UserRole.USER,
     },
 ]

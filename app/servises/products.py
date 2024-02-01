@@ -46,7 +46,7 @@ class ProductService(ProductRepository):
                 PRODUCTS_DB.remove(product_data)
                 return True
 
-        return None
+        return False
 
     @staticmethod
     def filter_products_by_category(category):

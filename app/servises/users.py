@@ -45,3 +45,10 @@ class UserService(UserRepository):
 
         return None
 
+    def delete_user(self, user_id: PositiveInt):
+        for user_data in USERS_DB:
+            if user_data.get("user_id") == user_id:
+                USERS_DB.remove(user_data)
+                return True
+
+        return False
