@@ -7,9 +7,7 @@ from app.routers import users
 from app.routers import products
 from app.routers import headers
 from app.routers import auth
-
-env_path = "../.env"
-DATABASE_URL = dotenv.get_key(env_path, "DATABASE_URL")
+from app.settings import DATABASE_URL
 
 app = FastAPI()
 

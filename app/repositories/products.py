@@ -1,27 +1,27 @@
 from abc import ABC, abstractmethod
+from typing import Union, List
 
-from pydantic import PositiveInt
 import asyncpg
 
-from app.models.products import ProductSearch
+from app.models.products import Product
 
 
-class ProductRepository(ABC):
-    def __init__(self, conn: asyncpg.Connection):
+class ProductRepository(ABC):  # ProductAbstractRepository
+    def __init__(self, conn: asyncpg.Connection):  # AbstractConnection
         self.conn = conn
 
     @abstractmethod
-    def create_product(self, product_data: dict):
+    def create(self, *args, **kwargs) -> Union[Product, None]:
         ...
 
     @abstractmethod
-    def get_product_by_id(self, product_id: PositiveInt):
+    def get(self, *args, **kwargs) -> Union[Product, None]:
         ...
 
     @abstractmethod
-    def get_products_list(self, data: ProductSearch):
+    def list(self, *args, **kwargs) -> Union[List[Product], None]:
         ...
 
     @abstractmethod
-    def delete_product(self, product_id: PositiveInt):
+    def delete(self, *args, **kwargs) -> Union[Product, None]:
         ...
