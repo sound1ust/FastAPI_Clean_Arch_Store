@@ -1,14 +1,11 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Union, List
 
-import asyncpg
-
 from app.models.products import Product
+from app.repositories.abstractions import AbstractRepository
 
 
-class ProductRepository(ABC):  # ProductAbstractRepository
-    def __init__(self, conn: asyncpg.Connection):  # AbstractConnection
-        self.conn = conn
+class ProductRepository(AbstractRepository):  # TODO ProductAbstractRepository
 
     @abstractmethod
     def create(self, *args, **kwargs) -> Union[Product, None]:
@@ -20,6 +17,10 @@ class ProductRepository(ABC):  # ProductAbstractRepository
 
     @abstractmethod
     def list(self, *args, **kwargs) -> Union[List[Product], None]:
+        ...
+
+    @abstractmethod
+    def update(self, *args, **kwargs) -> Union[Product, None]:
         ...
 
     @abstractmethod

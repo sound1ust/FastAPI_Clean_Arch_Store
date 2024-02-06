@@ -9,7 +9,7 @@ from app.repositories.products import ProductRepository
 class ProductService(ProductRepository):  # ProductPostgresqlRepository
     async def create(self, name, category, price) -> Union[Product, None]:
         """
-        Takes arguments, makes a request to a Database
+        Takes arguments, makes an INSERT request to a Database
         and returns a Product object or None
         """
         query = '''
@@ -28,7 +28,7 @@ class ProductService(ProductRepository):  # ProductPostgresqlRepository
 
     async def get(self, product_id: PositiveInt) -> Union[Product, None]:
         """
-        Takes product_id, makes a request to a Database
+        Takes product_id, makes a SELECT request to a Database
         and returns a Product object or None
         """
         query = '''
@@ -50,7 +50,7 @@ class ProductService(ProductRepository):  # ProductPostgresqlRepository
             limit,
     ) -> Union[List[Product], None]:
         """
-        Takes arguments, makes a request to a Database
+        Takes arguments, makes a SELECT request to a Database
         and returns a List of a Product objects or None
         """
         params = ["%" + keyword + "%"]
@@ -81,9 +81,35 @@ class ProductService(ProductRepository):  # ProductPostgresqlRepository
         products = list(map(self.get_product_object, stored_data))
         return products
 
+    async def update(
+            self,
+            product_id: PositiveInt,
+            name,
+            category,
+            price,
+    ) -> Union[Product, None]:
+        """
+        Takes product_id, makes an UPDATE request to a Database
+        and returns a Product object or None
+        """
+        query = '''
+        UPDATE products
+        SET name = $1, category = $2, price = $3
+        WHERE product_id = $4
+        RETURNING *;
+        '''
+        stored_data = await self.conn.fetchrow(
+            query, name, category, price, product_id,
+        )
+        if not stored_data:
+            return None
+
+        changed_product = self.get_product_object(stored_data)
+        return changed_product
+
     async def delete(self, product_id: PositiveInt) -> Union[Product, None]:
         """
-        Takes product_id, makes a request to a Database
+        Takes product_id, makes a DELETE request to a Database
         and returns a Product object or None
         """
         query = '''

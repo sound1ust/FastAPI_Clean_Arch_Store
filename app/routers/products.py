@@ -12,6 +12,22 @@ router = APIRouter(
     tags=["products", ],
 )
 
+@router.post(
+    "",
+    response_model=Product,
+    # dependencies=[Depends(UserAndRoleChecker(UserRole.MODERATOR)), ],
+)
+async def create_product(product_data: ProductCreate, conn=Depends(get_conn)):
+    name = product_data.name
+    category = product_data.category
+    price = product_data.price
+
+    product_service = ProductService(conn)
+    product = await product_service.create(name, category, price)
+    if not product:
+        raise HTTPException(status_code=400, detail="Bad Request")
+
+    return product
 
 @router.get("")
 async def list_products(
@@ -47,21 +63,28 @@ async def get_product(product_id: PositiveInt, conn=Depends(get_conn)):
 
     return product
 
-
 @router.post(
-    "",
+    "/{product_id}",
     response_model=Product,
     # dependencies=[Depends(UserAndRoleChecker(UserRole.MODERATOR)), ],
 )
-async def create_product(product_data: ProductCreate, conn=Depends(get_conn)):
+async def update_product(
+        product_id: PositiveInt,
+        product_data: ProductCreate,
+        conn=Depends(get_conn),
+):
     name = product_data.name
     category = product_data.category
     price = product_data.price
 
     product_service = ProductService(conn)
-    product = await product_service.create(name, category, price)
+    product = await product_service.update(product_id, name, category, price)
+
     if not product:
-        raise HTTPException(status_code=400, detail="Bad Request")
+        raise HTTPException(
+            status_code=404,
+            detail=f"There are no products with id '{product_id}'",
+        )
 
     return product
 
