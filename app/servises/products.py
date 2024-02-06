@@ -1,9 +1,15 @@
 from typing import Union, List
 
+from asyncpg import UniqueViolationError
 from pydantic import PositiveInt
 
 from app.models.products import Product
 from app.repositories.products import ProductRepository
+from app.models.exceptions import (
+    ProductNotFoundException,
+    ProductsListNotFoundException,
+    ProductNotCreatedException, ProductExistsException,
+)
 
 
 class ProductService(ProductRepository):  # ProductPostgresqlRepository
@@ -17,11 +23,15 @@ class ProductService(ProductRepository):  # ProductPostgresqlRepository
         VALUES ($1, $2, $3)
         RETURNING *;
         '''
-        stored_data = await self.conn.fetchrow(
-            query,name, category, price,
-        )
+        try:
+            stored_data = await self.conn.fetchrow(
+                query, name, category, price,
+            )
+        except UniqueViolationError as exc:
+            raise ProductExistsException(name=name)
+
         if not stored_data:
-            return None
+            raise ProductNotCreatedException()
 
         product = self.get_product_object(stored_data)
         return product
@@ -38,7 +48,7 @@ class ProductService(ProductRepository):  # ProductPostgresqlRepository
         '''
         stored_data = await self.conn.fetchrow(query, product_id)
         if not stored_data:
-            return None
+            raise ProductNotFoundException(product_id=product_id)
 
         product = self.get_product_object(stored_data)
         return product
@@ -77,7 +87,10 @@ class ProductService(ProductRepository):  # ProductPostgresqlRepository
 
         query += ";"
 
-        stored_data = await self.conn.fetch(query,*params)
+        stored_data = await self.conn.fetch(query, *params)
+        if not stored_data:
+            raise ProductsListNotFoundException()
+
         products = list(map(self.get_product_object, stored_data))
         return products
 
@@ -98,11 +111,15 @@ class ProductService(ProductRepository):  # ProductPostgresqlRepository
         WHERE product_id = $4
         RETURNING *;
         '''
-        stored_data = await self.conn.fetchrow(
-            query, name, category, price, product_id,
-        )
+        try:
+            stored_data = await self.conn.fetchrow(
+                query, name, category, price, product_id,
+            )
+        except UniqueViolationError as exc:
+            raise ProductExistsException(name=name)
+
         if not stored_data:
-            return None
+            raise ProductNotFoundException(product_id=product_id)
 
         changed_product = self.get_product_object(stored_data)
         return changed_product
@@ -117,7 +134,7 @@ class ProductService(ProductRepository):  # ProductPostgresqlRepository
         '''
         stored_data = await self.conn.fetchrow(query, product_id)
         if not stored_data:
-            return None
+            raise ProductNotFoundException(product_id=product_id)
 
         deleted_product = self.get_product_object(stored_data)
         return deleted_product

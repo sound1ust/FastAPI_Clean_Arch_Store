@@ -24,8 +24,6 @@ async def create_product(product_data: ProductCreate, conn=Depends(get_conn)):
 
     product_service = ProductService(conn)
     product = await product_service.create(name, category, price)
-    if not product:
-        raise HTTPException(status_code=400, detail="Bad Request")
 
     return product
 
@@ -40,13 +38,6 @@ async def list_products(
 
     product_service = ProductService(conn)
     products = await product_service.list(keyword, category, limit)
-
-    if not products:
-        raise HTTPException(
-            status_code=404,
-            detail="There are no products with these parameters",
-        )
-
     return products
 
 
@@ -54,13 +45,6 @@ async def list_products(
 async def get_product(product_id: PositiveInt, conn=Depends(get_conn)):
     product_service = ProductService(conn)
     product = await product_service.get(product_id)
-
-    if not product:
-        raise HTTPException(
-            status_code=404,
-            detail=f"There are no products with id '{product_id}'",
-        )
-
     return product
 
 @router.post(
@@ -79,13 +63,6 @@ async def update_product(
 
     product_service = ProductService(conn)
     product = await product_service.update(product_id, name, category, price)
-
-    if not product:
-        raise HTTPException(
-            status_code=404,
-            detail=f"There are no products with id '{product_id}'",
-        )
-
     return product
 
 
@@ -96,7 +73,4 @@ async def update_product(
 async def delete_product(product_id: PositiveInt, conn=Depends(get_conn)):
     product_service = ProductService(conn)
     deleted_product = await product_service.delete(product_id)
-    if not deleted_product:
-        raise HTTPException(status_code=404, detail="Product not found")
-
     return {"detail": f"Product deleted: {deleted_product}"}

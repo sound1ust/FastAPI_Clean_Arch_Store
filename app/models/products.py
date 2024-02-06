@@ -1,8 +1,6 @@
 from pydantic import BaseModel, PositiveInt, field_validator, PositiveFloat
 from typing import Union
 
-from app.databases.products import PRODUCTS_DB
-
 
 class Product(BaseModel):
     product_id: PositiveInt
