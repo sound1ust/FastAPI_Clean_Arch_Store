@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
+import asyncpg
 from pydantic import PositiveInt
 
 from app.models.users import UserIn
+from app.repositories.abstractions import AbstractRepository
 
 
-class UserRepository(ABC):
+class UserRepository(AbstractRepository): # UserAbstractRepository
     @abstractmethod
     def save_user(self, user: UserIn):
         ...

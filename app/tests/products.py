@@ -1,58 +1,96 @@
+import asyncpg
+import pytest
 from fastapi import HTTPException
+from httpx import AsyncClient
 
 from app.routers.products import get_product, list_products
+from app.main import app
+from app.settings import DATABASE_URL
 
 
-def test_get_product_valid_id():
-    product_id = 123
-    product = get_product(product_id)
-    assert product_id == product.get("product_id")
+# TODO
+@pytest.fixture
+async def set_up():
+    ...
 
 
-def test_get_product_invalid_id():
-    product_id = 1
+# TODO: clean db after every test?
+@pytest.mark.asyncio
+async def test_get_product_valid_id():
+    app.state.pool = await asyncpg.create_pool(DATABASE_URL)
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        await ac.post(
+            f"/products",
+            json={
+                "name": "test",
+                "category": "test",
+                "price": 1,
+            })
 
-    try:
-        get_product(product_id)
+        product_id = 1
+        response = await ac.get(f"/products/{product_id}")
+        assert response.status_code == 200
 
-    except HTTPException as exc:
-        assert exc.status_code == 404
-        assert exc.detail == f"There are no products with id '{product_id}'"
+    await app.state.pool.close()
 
 
-def test_list_products_no_category_no_limit():
+@pytest.mark.asyncio
+async def test_get_product_invalid_id():
+    app.state.pool = await asyncpg.create_pool(DATABASE_URL)
+    async with AsyncClient(app=app, base_url="http://test") as ac:
+        await ac.post(
+            f"/products",
+            json={
+                "name": "test",
+                "category": "test",
+                "price": 1,
+            })
+
+        product_id = 100
+
+        try:
+            await ac.get(f"/products/{product_id}")
+
+        except HTTPException as exc:
+            assert exc.status_code == 404
+            assert exc.detail == f"There are no products with id '{product_id}'"
+
+    await app.state.pool.close()
+
+
+async def test_list_products_no_category_no_limit():
     keyword = "phone"
-    products = list_products(keyword)
+    products = await list_products(keyword)
     assert all(
         keyword in str(product.get("name").lower()) for product in products
     )
 
 
-def test_list_products_with_category_no_limit():
+async def test_list_products_with_category_no_limit():
     keyword = "phone"
     category = "Electronics"
-    products = list_products(keyword, category)
+    products = await list_products(keyword, category)
     assert all(
         keyword in str(product.get("name").lower()) for product in products
     )
 
 
-def test_list_products_no_category_with_limit():
+async def test_list_products_no_category_with_limit():
     keyword = "phone"
     limit = 2
-    products = list_products(keyword, limit=limit)
+    products = await list_products(keyword, limit=limit)
     assert len(products) == limit
     assert all(
         keyword in str(product.get("name").lower()) for product in products
     )
 
 
-def test_list_products_invalid_category():
+async def test_list_products_invalid_category():
     keyword = "phone"
     category = "invalid_category"
 
     try:
-        list_products(keyword, category)
+        await list_products(keyword, category)
 
     except HTTPException as exc:
         assert exc.status_code == 422
@@ -61,11 +99,11 @@ def test_list_products_invalid_category():
         )
 
 
-def test_list_products_no_matching_products():
+async def test_list_products_no_matching_products():
     keyword = "invalid_keyword"
 
     try:
-        list_products(keyword)
+        await list_products(keyword)
         pass
 
     except HTTPException as exc:

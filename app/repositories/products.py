@@ -1,23 +1,28 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from typing import Union, List
 
-from pydantic import PositiveInt
+from app.models.products import Product
+from app.repositories.abstractions import AbstractRepository
 
-from app.models.products import ProductSearch
 
+class ProductRepository(AbstractRepository):  # TODO ProductAbstractRepository
 
-class ProductRepository(ABC):
     @abstractmethod
-    def create_product(self, data: dict):
+    def create(self, *args, **kwargs) -> Union[Product, None]:
         ...
 
     @abstractmethod
-    def get_product_by_id(self, product_id: PositiveInt):
+    def get(self, *args, **kwargs) -> Union[Product, None]:
         ...
 
     @abstractmethod
-    def get_products_list(self, data: ProductSearch):
+    def list(self, *args, **kwargs) -> Union[List[Product], None]:
         ...
 
     @abstractmethod
-    def delete_product(self, product_id: PositiveInt):
+    def update(self, *args, **kwargs) -> Union[Product, None]:
+        ...
+
+    @abstractmethod
+    def delete(self, *args, **kwargs) -> Union[Product, None]:
         ...
