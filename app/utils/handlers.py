@@ -1,4 +1,3 @@
-from asyncpg import PostgresError, UniqueViolationError
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
