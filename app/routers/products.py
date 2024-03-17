@@ -1,11 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import PositiveInt, ValidationError
+from fastapi import APIRouter, Depends
+from pydantic import PositiveInt
 
-from app.dependencies.auth import UserAndRoleChecker
 from app.models.products import ProductSearch, Product, ProductCreate
-from app.models.users import UserRole
 from app.servises.products import ProductService
-from database.dependencies import get_conn
+from app.dependencies.database import get_conn
 
 router = APIRouter(
     prefix="/products",

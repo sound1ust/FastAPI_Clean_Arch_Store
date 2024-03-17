@@ -3,7 +3,7 @@ import pytest
 from fastapi import HTTPException
 from httpx import AsyncClient
 
-from app.routers.products import get_product, list_products
+from app.routers import get_product, list_products
 from app.main import app
 from app.settings import DATABASE_URL
 
