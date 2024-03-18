@@ -10,6 +10,7 @@ router = APIRouter(
     tags=["products", ],
 )
 
+
 @router.post(
     "",
     response_model=Product,
@@ -24,6 +25,7 @@ async def create_product(product_data: ProductCreate, conn=Depends(get_conn)):
     product = await product_service.create(name, category, price)
 
     return product
+
 
 @router.get("")
 async def list_products(
@@ -44,6 +46,7 @@ async def get_product(product_id: PositiveInt, conn=Depends(get_conn)):
     product_service = ProductService(conn)
     product = await product_service.get(product_id)
     return product
+
 
 @router.post(
     "/{product_id}",
