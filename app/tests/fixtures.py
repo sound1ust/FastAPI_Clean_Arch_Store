@@ -35,32 +35,24 @@ async def pool():
 @pytest.fixture
 async def product(pool) -> Product:
     async with app.state.pool.acquire() as connection:
-        product_service = ProductService(connection)
-
-        while True:
-            try:
-                product = await product_service.create(
-                    "test",
-                    "test",
-                    1000
-                )
-                return product
-            except ProductExistsException as exc:
-                connection.execute(f"DELETE FROM products WHERE name = 'test'")
+        return await create_product(name="test", connection=connection)
 
 
 @pytest.fixture
 async def product_2(pool) -> Product:
     async with app.state.pool.acquire() as connection:
-        product_service = ProductService(connection)
+        return await create_product(name="phone", connection=connection)
 
-        while True:
-            try:
-                product = await product_service.create(
-                    "phone",
-                    "phone",
-                    2000
-                )
-                return product
-            except ProductExistsException as exc:
-                connection.execute(f"DELETE FROM products WHERE name = 'phone'")
+
+async def create_product(connection, name):
+    product_service = ProductService(connection)
+    while True:
+        try:
+            product = await product_service.create(
+                name=name,
+                category=name,
+                price=1000
+            )
+            return product
+        except ProductExistsException as exc:
+            connection.execute(f"DELETE FROM products WHERE name = '{name}'")
