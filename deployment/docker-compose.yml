@@ -31,7 +31,7 @@ services:
       POSTGRES_USER: store_app
       POSTGRES_PASSWORD: store_app
     volumes:
-      - store_db:/var/lib/postgresql/data
+      - store_db_test:/var/lib/postgresql/data
     networks:
       - store_net
     restart: always
@@ -65,6 +65,8 @@ services:
 volumes:
   store_db:
     name: store_db
+  store_db_test:
+    name: store_db_test
 
 networks:
   store_net:
