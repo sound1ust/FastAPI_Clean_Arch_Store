@@ -5,10 +5,9 @@ import asyncpg
 from pydantic import PositiveInt
 
 from app.models.users import UserIn
-from app.repositories.abstractions import AbstractRepository
 
 
-class UserRepository(AbstractRepository): # UserAbstractRepository
+class UserRepository(): # UserAbstractRepository
     @abstractmethod
     def save_user(self, user: UserIn):
         ...

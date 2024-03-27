@@ -1,12 +1,20 @@
-import dotenv
+import os
 
-env = dotenv.find_dotenv("../.env")
+from app.repositories.products import ProductPostgresqlRepository
 
+# database settings based on environment variables
+DATABASE_SETTINGS = {
+    "REPOSITORY": "POSTGRES",
+    "HOST": os.environ.get("HOST"),
+    "PORT": os.environ.get("PORT"),
+    "DB": os.environ.get("DB"),
+    "DB_USERNAME": os.environ.get("DB_USERNAME"),
+    "DB_PASSWORD": os.environ.get("DB_PASSWORD"),
+}
 
-BASE_URL = dotenv.get_key(env, "BASE_URL")
-
-HOST = dotenv.get_key(env, "HOST")
-PORT = dotenv.get_key(env, "PORT")
-DATABASE = dotenv.get_key(env, "DB")
-USER = dotenv.get_key(env, "DB_USERNAME")
-PASSWORD = dotenv.get_key(env, "DB_PASSWORD")
+# Repositories by database system and sub app name
+REPOSITORIES = {
+    "POSTGRES": {
+        "PRODUCT": ProductPostgresqlRepository,
+    },
+}

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from pydantic import PositiveInt
 
 from app.models.products import ProductSearch, Product, ProductCreate
-from app.servises.products import ProductService
+from app.servises.product import ProductService
 from app.dependencies.database import get_conn
 
 router = APIRouter(
@@ -21,7 +21,7 @@ async def create_product(product_data: ProductCreate, conn=Depends(get_conn)):
     category = product_data.category
     price = product_data.price
 
-    product_service = ProductService(conn)
+    product_service = ProductService(conn=conn)
     product = await product_service.create(name, category, price)
 
     return product
@@ -36,14 +36,14 @@ async def list_products(
     category = product_search.category
     limit = product_search.limit
 
-    product_service = ProductService(conn)
+    product_service = ProductService(conn=conn)
     products = await product_service.list(keyword, category, limit)
     return products
 
 
 @router.get("/{product_id}", response_model=Product)
 async def get_product(product_id: PositiveInt, conn=Depends(get_conn)):
-    product_service = ProductService(conn)
+    product_service = ProductService(conn=conn)
     product = await product_service.get(product_id)
     return product
 
@@ -62,7 +62,7 @@ async def update_product(
     category = product_data.category
     price = product_data.price
 
-    product_service = ProductService(conn)
+    product_service = ProductService(conn=conn)
     product = await product_service.update(product_id, name, category, price)
     return product
 
@@ -72,6 +72,6 @@ async def update_product(
     # dependencies=[Depends(UserAndRoleChecker(UserRole.MODERATOR)), ],
 )
 async def delete_product(product_id: PositiveInt, conn=Depends(get_conn)):
-    product_service = ProductService(conn)
+    product_service = ProductService(conn=conn)
     deleted_product = await product_service.delete(product_id)
     return {"detail": f"Product deleted: {deleted_product}"}

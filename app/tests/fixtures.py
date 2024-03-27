@@ -4,21 +4,23 @@ import asyncpg
 import pytest
 
 from app.main import app
-from app.config import *
+from app.tests.config import *
 from app.models.exceptions import ProductExistsException
 from app.models.products import Product
-from app.servises.products import ProductService
+from app.servises.product import ProductService
 
 
 @pytest.fixture
 async def pool():
     app.state.pool = await asyncpg.create_pool(
-        host=HOST,
-        port=PORT,
-        database=DATABASE,
-        user=USER,
-        password=PASSWORD,
+        host=DATABASE_SETTINGS.get("HOST"),
+        port=DATABASE_SETTINGS.get("PORT"),
+        database=DATABASE_SETTINGS.get("DATABASE"),
+        user=DATABASE_SETTINGS.get("USER"),
+        password=DATABASE_SETTINGS.get("PASSWORD"),
     )
+    async with app.state.pool.acquire() as connection:
+        await connection.execute(f"DELETE FROM products")
 
     @contextlib.asynccontextmanager
     async def cleanup():
@@ -45,7 +47,7 @@ async def product_2(pool) -> Product:
 
 
 async def create_product(connection, name):
-    product_service = ProductService(connection)
+    product_service = ProductService(conn=connection)
     while True:
         try:
             product = await product_service.create(
