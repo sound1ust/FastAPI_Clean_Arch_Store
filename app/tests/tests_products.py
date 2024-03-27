@@ -2,7 +2,7 @@ import json
 from fastapi import HTTPException
 from httpx import AsyncClient
 
-from app.config import BASE_URL
+from app.tests.config import BASE_URL
 from app.tests.fixtures import *
 
 

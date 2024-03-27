@@ -1,10 +1,9 @@
-import os
-
 import asyncpg
 import uvicorn
 from fastapi import FastAPI
 
 from app.routers import auth, products, users
+from app.config import *
 
 app = FastAPI()
 
@@ -16,11 +15,11 @@ app.include_router(auth.router)
 @app.on_event("startup")
 async def startup():
     app.state.pool = await asyncpg.create_pool(
-        host=os.environ.get("HOST"),
-        port=os.environ.get("PORT"),
-        database=os.environ.get("DB"),
-        user=os.environ.get("DB_USERNAME"),
-        password=os.environ.get("DB_PASSWORD"),
+        host=DATABASE_SETTINGS.get("HOST"),
+        port=DATABASE_SETTINGS.get("PORT"),
+        database=DATABASE_SETTINGS.get("DB"),
+        user=DATABASE_SETTINGS.get("DB_USERNAME"),
+        password=DATABASE_SETTINGS.get("DB_PASSWORD"),
     )
 
 
