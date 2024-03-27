@@ -6,7 +6,7 @@ from app.servises.product import ProductService
 from app.dependencies.database import get_conn
 
 router = APIRouter(
-    prefix="/products",
+    prefix="/api/v1/products",
     tags=["products", ],
 )
 
@@ -14,6 +14,7 @@ router = APIRouter(
 @router.post(
     "",
     response_model=Product,
+    status_code=201
     # dependencies=[Depends(UserAndRoleChecker(UserRole.MODERATOR)), ],
 )
 async def create_product(product_data: ProductCreate, conn=Depends(get_conn)):

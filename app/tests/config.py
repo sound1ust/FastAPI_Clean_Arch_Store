@@ -1,9 +1,11 @@
 import dotenv
 
+from app.config import *
+
 # tests requires .env file
 env = dotenv.find_dotenv("../.env")
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "http://127.0.0.1:8000/api/" + ROUTERS_VERSION
 
 # test database settings based on .env file
 DATABASE_SETTINGS = {

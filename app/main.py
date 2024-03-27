@@ -2,7 +2,7 @@ import asyncpg
 import uvicorn
 from fastapi import FastAPI
 
-from app.routers import auth, products, users
+from app.routers.v1 import auth, users, products
 from app.config import *
 
 app = FastAPI()
