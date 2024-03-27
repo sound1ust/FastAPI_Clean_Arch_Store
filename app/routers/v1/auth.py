@@ -12,7 +12,7 @@ from app.utils.auth import (
 from app.servises.users import UserService
 
 router = APIRouter(
-    prefix="/auth",
+    prefix="/api/v1/auth",
     tags=["auth", ],
 )
 

@@ -18,3 +18,5 @@ REPOSITORIES = {
         "PRODUCT": ProductPostgresqlRepository,
     },
 }
+
+ROUTERS_VERSION = "v1"

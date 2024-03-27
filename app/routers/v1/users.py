@@ -8,7 +8,7 @@ from app.models.users import UserOut, UserRole, UserIn
 from app.servises.users import UserService
 
 router = APIRouter(
-    prefix="/users",
+    prefix="/api/v1/users",
     tags=["users", ],
 )
 
