@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Union, List
+from typing import Union, List, Type
 
 from app.config import *
 from app.models.products import Product
+from app.repositories.abstract import AbstractRepository
 from app.repositories.exceptions import (
     RepositoryNotSettedException,
     RepositoryNotFoundException, AppNotSettedException, AppNotFoundException,
@@ -36,7 +37,11 @@ class AbstractService(ABC):
         ...
 
     @staticmethod
-    def __get_repo_dict():
+    def __get_repo_dict() -> dict[str, Type[AbstractRepository]]:
+        """
+        Function that is using for taking repositories dict
+         defined in config.py.
+        """
         repo_name = DATABASE_SETTINGS.get("REPOSITORY")
         if not repo_name:
             raise RepositoryNotSettedException
@@ -47,7 +52,11 @@ class AbstractService(ABC):
 
         return repo_dict
 
-    def get_repo(self):
+    def get_repo(self) -> Type[AbstractRepository]:
+        """
+        Function that is using for taking a repository for
+        current app in service.
+        """
         if not self.app_name:
             raise AppNotSettedException
 
