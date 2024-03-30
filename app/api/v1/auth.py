@@ -9,7 +9,7 @@ from app.utils.auth import (
     authenticate_user_jwt,
     set_session_token_cookie,
 )
-from app.servises.users import UserService
+from app.services.users import UserService
 
 router = APIRouter(
     prefix="/api/v1/auth",

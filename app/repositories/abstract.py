@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import List
 
-from asyncpg import Record
+from app.models.products import Product
 
 
 class AbstractRepository(ABC):
@@ -9,21 +9,21 @@ class AbstractRepository(ABC):
         self.config = config
 
     @abstractmethod
-    def create(self, *args, **kwargs) -> Record:
+    def create(self, *args, **kwargs) -> Product:
         ...
 
     @abstractmethod
-    def get(self, *args, **kwargs) -> Record:
+    def get(self, *args, **kwargs) -> Product:
         ...
 
     @abstractmethod
-    def list(self, *args, **kwargs) -> List[Record]:
+    def list(self, *args, **kwargs) -> List[Product]:
         ...
 
     @abstractmethod
-    def update(self, *args, **kwargs) -> Record:
+    def update(self, *args, **kwargs) -> Product:
         ...
 
     @abstractmethod
-    def delete(self, *args, **kwargs) -> Record:
+    def delete(self, *args, **kwargs) -> Product:
         ...

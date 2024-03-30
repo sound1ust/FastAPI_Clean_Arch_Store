@@ -1,7 +1,9 @@
-from typing import List
+from typing import List, Union
 
 from asyncpg import UniqueViolationError, Record
+from pydantic import PositiveFloat, PositiveInt
 
+from app.models.products import Product
 from app.repositories.abstract import AbstractRepository
 from app.models.exceptions import (
     ProductNotFoundException,
@@ -22,7 +24,12 @@ class ProductPostgresqlRepository(AbstractRepository):
         if not self.conn:
             raise RepositoryConfigException
 
-    async def create(self, name, category, price) -> Record:
+    async def create(
+            self,
+            name: str,
+            category: str,
+            price: PositiveFloat,
+    ) -> Product:
         """
         Takes arguments and makes an INSERT request to a Database.
         """
@@ -41,9 +48,12 @@ class ProductPostgresqlRepository(AbstractRepository):
         if not stored_data:
             raise ProductNotCreatedException()
 
-        return stored_data
+        return self.get_product_object(stored_data)
 
-    async def get(self, product_id) -> Record:
+    async def get(
+            self,
+            product_id: PositiveInt,
+    ) -> Product:
         """
         Takes product_id and makes a SELECT request to a Database.
         """
@@ -56,9 +66,14 @@ class ProductPostgresqlRepository(AbstractRepository):
         if not stored_data:
             raise ProductNotFoundException(product_id=product_id)
 
-        return stored_data
+        return self.get_product_object(stored_data)
 
-    async def list(self, keyword, category, limit) -> List[Record]:
+    async def list(
+            self,
+            keyword: str = "",
+            category: Union[str, None] = None,
+            limit: PositiveInt = 10,
+    ) -> List[Product]:
         """
         Takes arguments and makes a SELECT request to a Database.
         """
@@ -90,9 +105,15 @@ class ProductPostgresqlRepository(AbstractRepository):
         if not stored_data:
             raise ProductsListNotFoundException()
 
-        return stored_data
+        return list(map(self.get_product_object, stored_data))
 
-    async def update(self, product_id, name, category, price) -> Record:
+    async def update(
+            self,
+            product_id: PositiveInt,
+            name: str,
+            category: str,
+            price: PositiveFloat,
+    ) -> Product:
         """
         Takes product_id and makes an UPDATE request to a Database.
         """
@@ -112,9 +133,12 @@ class ProductPostgresqlRepository(AbstractRepository):
         if not stored_data:
             raise ProductNotFoundException(product_id=product_id)
 
-        return stored_data
+        return self.get_product_object(stored_data)
 
-    async def delete(self, product_id) -> Record:
+    async def delete(
+            self,
+            product_id: PositiveInt,
+    ) -> Product:
         """
         Takes product_id and makes a DELETE request to a Database.
         """
@@ -125,4 +149,8 @@ class ProductPostgresqlRepository(AbstractRepository):
         if not stored_data:
             raise ProductNotFoundException(product_id=product_id)
 
-        return stored_data
+        return self.get_product_object(stored_data)
+
+    @staticmethod
+    def get_product_object(stored_data: Record) -> Product:
+        return Product(**{key: value for key, value in stored_data.items()})

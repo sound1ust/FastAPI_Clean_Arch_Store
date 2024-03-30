@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from pydantic import PositiveInt
 
 from app.models.products import ProductSearch, Product, ProductCreate
-from app.servises.product import ProductService
+from app.services.product import ProductService
 from app.dependencies.database import get_conn
 
 router = APIRouter(

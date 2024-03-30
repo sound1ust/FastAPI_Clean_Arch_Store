@@ -5,7 +5,7 @@ from pydantic import PositiveInt
 
 from app.dependencies.auth import UserAndRoleChecker
 from app.models.users import UserOut, UserRole, UserIn
-from app.servises.users import UserService
+from app.services.users import UserService
 
 router = APIRouter(
     prefix="/api/v1/users",

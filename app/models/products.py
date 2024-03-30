@@ -17,5 +17,5 @@ class ProductCreate(BaseModel):
 
 class ProductSearch(BaseModel):
     keyword: constr(min_length=0, max_length=50) = ""
-    category: Union[str, None] = None
+    category: Union[constr(min_length=3, max_length=50), None] = None
     limit: PositiveInt = 10

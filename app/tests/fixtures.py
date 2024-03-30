@@ -7,7 +7,7 @@ from app.main import app
 from app.tests.config import *
 from app.models.exceptions import ProductExistsException
 from app.models.products import Product
-from app.servises.product import ProductService
+from app.services.product import ProductService
 
 
 @pytest.fixture

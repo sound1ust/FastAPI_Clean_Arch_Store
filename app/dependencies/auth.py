@@ -3,7 +3,7 @@ import uuid
 from fastapi import HTTPException, Request
 
 from app.models.users import UserRole
-from app.servises.users import UserService
+from app.services.users import UserService
 
 
 class UserAndRoleChecker:

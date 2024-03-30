@@ -4,7 +4,7 @@ from fastapi.security import HTTPBasic
 import jwt
 
 from app.models.users import UserRole
-from app.servises.users import UserService
+from app.services.users import UserService
 from app.databases.tokens import TOKEN_BLACKLIST
 
 security = HTTPBasic()
